@@ -6,7 +6,7 @@ if (req.method === 'OPTIONS') {
   return res.status(200).end();
 }
 // api/paystack-webhook.js
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 const BASE44_URL = 'https://declutterffurnishings.base44.app/api/apps/6a27fe3930796e6ea134052d/entities/CommissionPayment';
 
