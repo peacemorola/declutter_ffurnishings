@@ -39,8 +39,8 @@ export default async function handler(req, res) {
       return res.status(200).json({ received: true });
     }
 
-    const findRes = await fetch(
-      `${BASE44_URL}?q=${encodeURIComponent(JSON.stringify({ paystack_reference: reference }))}`,
+       const findRes = await fetch(
+      `${BASE44_URL}?paystack_reference=${encodeURIComponent(reference)}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.BASE44_API_KEY}`,
@@ -50,7 +50,12 @@ export default async function handler(req, res) {
     );
     console.log(`Base44 find status: ${findRes.status}`);
     const findData = await findRes.json();
-    const record = Array.isArray(findData) ? findData[0] : findData.items?.[0];
+    console.log('Base44 find response:', JSON.stringify(findData).slice(0, 400));
+    const list = Array.isArray(findData)
+      ? findData
+      : (findData.items || findData.data || findData.results || []);
+    const record = list.find(r => r.paystack_reference === reference);
+    
 
     if (!record) {
       console.log(`No CommissionPayment found for ${reference}`);
