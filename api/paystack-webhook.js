@@ -1,6 +1,7 @@
+// api/paystack-webhook.js
 import crypto from 'crypto';
 
-const BASE44_URL = 'https://declutterffurnishings.base44.app/api/apps/6a27fe3930796e6ea134052d/entities/CommissionPayment';
+const BASE44_URL = 'https://app.base44.com/api/apps/6a27fe3930796e6ea134052d/entities/CommissionPayment';
 
 export default async function handler(req, res) {
   // Only accept POST requests
@@ -65,7 +66,14 @@ export default async function handler(req, res) {
 
     // Attempt B: unfiltered list (diagnostic — remove once the cause is found)
     const resB = await fetch(BASE44_URL, { headers });
-    const listB = toList(await resB.json());
+    const rawB = await resB.text();
+    console.log(`Unfiltered raw: ${rawB.slice(0, 300)}`);
+    let listB = [];
+    try {
+      listB = toList(JSON.parse(rawB));
+    } catch (e) {
+      console.log('Unfiltered response was not JSON');
+    }
     console.log(`Unfiltered: status ${resB.status}, count ${listB.length}`);
     console.log(
       'Latest records:',
